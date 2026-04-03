@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>映緹影像 · 線上預約系統 Claude 指令包</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g:#2D4F45;
+  --g2:#3d6b5f;
+  --g3:#1e342d;
+  --o:#C85A2A;
+  --o2:#e0703f;
+  --cr:#F4EFE6;
+  --cr2:#ede5d8;
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Noto Sans TC',sans-serif;
+  background:var(--cr);
+  color:#333;
+  min-height:100vh;
+}
+
+/* ── Hero ── */
+.hero{
+  background:var(--g);
+  padding:80px 24px 60px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.hero::before{
+  content:'';
+  position:absolute;
+  top:-60px;right:-60px;
+  width:300px;height:300px;
+  border-radius:50%;
+  border:1px solid rgba(244,239,230,.08);
+}
+.hero::after{
+  content:'';
+  position:absolute;
+  bottom:-80px;left:-40px;
+  width:240px;height:240px;
+  border-radius:50%;
+  border:1px solid rgba(244,239,230,.06);
+}
+.logo-wrap{
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  margin-bottom:32px;
+}
+.logo-circle{
+  width:44px;height:44px;border-radius:50%;
+  border:2px solid rgba(244,239,230,.5);
+  display:flex;align-items:center;justify-content:center;
+}
+.logo-inner{width:18px;height:18px;border-radius:50%;background:var(--cr);opacity:.4}
+.hero-label{
+  font-size:11px;letter-spacing:.2em;color:#8ab3a8;
+  text-transform:uppercase;margin-bottom:16px;
+}
+.hero-title{
+  font-family:'Noto Serif TC',serif;
+  font-size:clamp(24px,5vw,38px);
+  font-weight:400;color:var(--cr);
+  letter-spacing:.06em;line-height:1.4;
+  margin-bottom:16px;
+}
+.hero-sub{
+  font-size:14px;color:#8ab3a8;
+  line-height:1.8;letter-spacing:.04em;
+  max-width:480px;margin:0 auto 32px;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(244,239,230,.1);
+  border:1px solid rgba(244,239,230,.2);
+  border-radius:100px;
+  padding:8px 20px;
+  font-size:12px;color:var(--cr);letter-spacing:.04em;
+}
+.badge-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--o);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse{
+  0%,100%{opacity:1}
+  50%{opacity:.4}
+}
+
+/* ── Container ── */
+.container{max-width:720px;margin:0 auto;padding:0 24px 80px;}
+
+/* ── Section ── */
+.section{margin-top:48px}
+.section-header{
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:20px;
+}
+.section-num{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--o);color:white;
+  font-size:13px;font-weight:500;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.section-title{
+  font-family:'Noto Serif TC',serif;
+  font-size:18px;font-weight:400;color:var(--g3);
+  letter-spacing:.04em;
+}
+
+/* ── Card ── */
+.card{
+  background:white;border-radius:14px;
+  border:1.5px solid #c5d8d3;
+  overflow:hidden;margin-bottom:12px;
+}
+.card-inner{padding:20px 24px}
+
+/* ── Prompt box ── */
+.prompt-box{
+  background:var(--g3);border-radius:10px;
+  padding:20px 24px;position:relative;
+}
+.prompt-label{
+  font-size:10px;letter-spacing:.15em;color:#8ab3a8;
+  text-transform:uppercase;margin-bottom:12px;
+}
+.prompt-text{
+  font-size:13px;color:#c5d8d3;line-height:1.9;
+  font-family:'Noto Sans TC',sans-serif;
+}
+.prompt-text .var{
+  color:var(--o2);font-weight:500;
+}
+.copy-btn{
+  position:absolute;top:16px;right:16px;
+  background:rgba(244,239,230,.1);
+  border:1px solid rgba(244,239,230,.2);
+  border-radius:6px;padding:5px 12px;
+  font-size:11px;color:var(--cr);cursor:pointer;
+  font-family:inherit;transition:all .15s;
+  letter-spacing:.04em;
+}
+.copy-btn:hover{background:rgba(244,239,230,.2)}
+.copy-btn.copied{background:var(--o);border-color:var(--o)}
+
+/* ── Steps ── */
+.steps{display:flex;flex-direction:column;gap:12px}
+.step{
+  display:flex;gap:14px;align-items:flex-start;
+  padding:14px 16px;
+  background:#f9f6f1;border-radius:10px;
+  border:1px solid var(--cr2);
+}
+.step-icon{
+  width:28px;height:28px;border-radius:7px;
+  background:var(--g);color:var(--cr);
+  font-size:12px;font-weight:500;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px;
+}
+.step-content{}
+.step-title{font-size:13px;font-weight:500;color:var(--g3);margin-bottom:3px}
+.step-desc{font-size:12px;color:#777;line-height:1.7}
+.step-desc code{
+  background:#e8f0ee;color:var(--g);
+  padding:1px 6px;border-radius:4px;font-size:11px;
+  font-family:monospace;
+}
+
+/* ── Warning ── */
+.warning{
+  background:#fff8f4;border:1.5px solid #e0a080;
+  border-radius:10px;padding:14px 18px;
+  display:flex;gap:12px;align-items:flex-start;
+}
+.warning-icon{
+  width:20px;height:20px;border-radius:50%;
+  background:var(--o);color:white;
+  font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:1px;
+}
+.warning-text{font-size:12px;color:#7a3b1e;line-height:1.8}
+.warning-text strong{font-weight:500}
+
+/* ── Checklist ── */
+.checklist{display:flex;flex-direction:column;gap:8px}
+.check-item{
+  display:flex;gap:10px;align-items:flex-start;
+  font-size:13px;color:#555;line-height:1.6;
+}
+.check-dot{
+  width:18px;height:18px;border-radius:50%;
+  background:#eaf3f0;border:1.5px solid var(--g);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:2px;
+}
+.check-dot svg{width:9px;height:9px}
+
+/* ── Divider ── */
+.divider{
+  border:none;border-top:1px solid var(--cr2);
+  margin:40px 0;
+}
+
+/* ── Footer ── */
+.site-footer{
+  background:var(--g3);color:#8ab3a8;
+  text-align:center;padding:24px;
+  font-size:12px;letter-spacing:.06em;
+}
+.footer-brand{
+  font-family:'Noto Serif TC',serif;
+  font-size:15px;color:var(--cr);
+  margin-bottom:6px;
+}
+
+/* ── Fade in ── */
+.fade-in{
+  opacity:0;transform:translateY(16px);
+  animation:fadeIn .6s forwards;
+}
+@keyframes fadeIn{
+  to{opacity:1;transform:translateY(0)}
+}
+.fade-in:nth-child(1){animation-delay:.1s}
+.fade-in:nth-child(2){animation-delay:.2s}
+.fade-in:nth-child(3){animation-delay:.3s}
+.fade-in:nth-child(4){animation-delay:.4s}
+
+@media(max-width:480px){
+  .hero{padding:60px 20px 44px}
+  .container{padding:0 16px 60px}
+  .prompt-box{padding:16px}
+  .copy-btn{position:static;margin-top:12px;display:block;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="logo-wrap">
+    <div class="logo-circle"><div class="logo-inner"></div></div>
+    <span style="font-family:'Noto Serif TC',serif;font-size:16px;color:var(--cr);letter-spacing:.08em">映緹影像</span>
+  </div>
+  <div class="hero-label">Claude AI 指令包 · 各行各業通用</div>
+  <div class="hero-title">用 Claude 做出<br>專屬線上預約系統</div>
+  <div class="hero-sub">不論你是攝影師、美容師、老師、治療師⋯<br>任何需要預約服務的行業都適用<br>從零開始，不需要任何程式基礎</div>
+  <div class="hero-badge">
+    <div class="badge-dot"></div>
+    完全免費 · GitHub Pages + Google 試算表
+  </div>
+</div>
+
+<div style="background:#fff8f4;border-bottom:1.5px solid #e0c8b0;padding:14px 24px;text-align:center;">
+  <span style="font-size:13px;color:#7a3b1e;">喜歡這份指令包？歡迎追蹤映緹影像的 IG 獲取更多資源 👉 </span>
+  <a href="https://www.instagram.com/intidoga.st" target="_blank"
+     style="font-size:13px;font-weight:500;color:var(--o);text-decoration:none;border-bottom:1px solid var(--o);padding-bottom:1px;">
+    @intidoga.st
+  </a>
+</div>
+
+<div class="container">
+
+  <!-- 準備事項 -->
+  <div class="section fade-in">
+    <div class="section-header">
+      <div class="section-num" style="background:var(--g)">✦</div>
+      <div class="section-title">開始前請先準備好</div>
+    </div>
+    <div class="card">
+      <div class="card-inner">
+        <div class="checklist">
+          <div class="check-item">
+            <div class="check-dot"><svg viewBox="0 0 10 10" fill="none" stroke="#2D4F45" stroke-width="1.5" stroke-linecap="round"><polyline points="2 5 4 7 8 3"/></svg></div>
+            你的品牌色（主色、輔色、背景色的色碼）
+          </div>
+          <div class="check-item">
+            <div class="check-dot"><svg viewBox="0 0 10 10" fill="none" stroke="#2D4F45" stroke-width="1.5" stroke-linecap="round"><polyline points="2 5 4 7 8 3"/></svg></div>
+            開放的拍攝時段與每天最長可預約時數
+          </div>
+          <div class="check-item">
+            <div class="check-dot"><svg viewBox="0 0 10 10" fill="none" stroke="#2D4F45" stroke-width="1.5" stroke-linecap="round"><polyline points="2 5 4 7 8 3"/></svg></div>
+            要接收預約通知的 Email 信箱
+          </div>
+          <div class="check-item">
+            <div class="check-dot"><svg viewBox="0 0 10 10" fill="none" stroke="#2D4F45" stroke-width="1.5" stroke-linecap="round"><polyline points="2 5 4 7 8 3"/></svg></div>
+            Google 帳號（建立試算表與 Apps Script）
+          </div>
+          <div class="check-item">
+            <div class="check-dot"><svg viewBox="0 0 10 10" fill="none" stroke="#2D4F45" stroke-width="1.5" stroke-linecap="round"><polyline points="2 5 4 7 8 3"/></svg></div>
+            GitHub 帳號（免費，用來上架預約網頁）
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 步驟一 -->
+  <div class="section fade-in">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div class="section-title">製作預約頁面</div>
+    </div>
+    <div class="prompt-box">
+      <div class="prompt-label">複製這段指令，貼到 Claude 對話框</div>
+      <div class="prompt-text" id="prompt1">請幫我製作一個線上預約系統 HTML 頁面，品牌色使用主色 <span class="var">（你的主色色碼）</span>、輔色 <span class="var">（你的輔色色碼）</span>、背景色 <span class="var">（你的背景色色碼）</span>。功能需求如下：
+・月曆選擇拍攝日期
+・選擇連續時段，最多 <span class="var">（X）</span> 個時段（共 <span class="var">（X）</span> 小時），時段為 <span class="var">（例：09:00–11:00、11:00–13:00、14:00–16:00）</span>
+・填寫姓名和聯絡電話
+・時段選擇區加上提醒文字：請確認後再預約，勿隨意更改
+・預約資料串接 Google 試算表（欄位：姓名、電話、預約日期、時段）
+・已預約時段自動鎖住不能重複預約
+・有新預約時自動寄通知信到 <span class="var">（你的信箱）</span></div>
+      <button class="copy-btn" onclick="copyPrompt('prompt1',this)">複製指令</button>
+    </div>
+  </div>
+
+  <!-- 步驟二 -->
+  <div class="section fade-in">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div class="section-title">設定 Google Apps Script</div>
+    </div>
+    <div class="prompt-box" style="margin-bottom:12px">
+      <div class="prompt-label">複製這段指令，繼續在 Claude 對話</div>
+      <div class="prompt-text" id="prompt2">請提供完整的 Google Apps Script 程式碼，功能包含：
+・doGet：讀取試算表已預約資料，回傳 JSONP 格式，日期格式轉換為 yyyy-MM-dd，時區為 Asia/Taipei
+・doPost：將預約資料寫入試算表（姓名、電話、日期、時段），並自動寄通知信到 <span class="var">（你的信箱）</span></div>
+      <button class="copy-btn" onclick="copyPrompt('prompt2',this)">複製指令</button>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-icon">①</div>
+        <div class="step-content">
+          <div class="step-title">建立 Google 試算表</div>
+          <div class="step-desc">新增空白試算表，第一列填入欄位標題：<code>姓名</code><code>電話</code><code>預約日期</code><code>時段</code>，並將 C 欄格式設為「純文字」</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-icon">②</div>
+        <div class="step-content">
+          <div class="step-title">開啟 Apps Script</div>
+          <div class="step-desc">試算表上方點「擴充功能」→「Apps Script」，把 Claude 給的程式碼全部貼上並儲存</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-icon">③</div>
+        <div class="step-content">
+          <div class="step-title">部署為網頁應用程式</div>
+          <div class="step-desc">點「部署」→「新增部署」，類型選「網頁應用程式」，執行身分「我」，存取權「所有人」，點「部署」並複製產生的網址</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 步驟三 -->
+  <div class="section fade-in">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div class="section-title">上架到 GitHub Pages</div>
+    </div>
+    <div class="prompt-box" style="margin-bottom:12px">
+      <div class="prompt-label">複製這段指令，繼續在 Claude 對話</div>
+      <div class="prompt-text" id="prompt3">我已經有一個 HTML 預約頁面，請帶我一步步把它上架到 GitHub Pages，讓客戶可以透過公開網址使用。</div>
+      <button class="copy-btn" onclick="copyPrompt('prompt3',this)">複製指令</button>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-icon">①</div>
+        <div class="step-content">
+          <div class="step-title">註冊 GitHub 帳號</div>
+          <div class="step-desc">前往 github.com 免費註冊，完全不需要付費</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-icon">②</div>
+        <div class="step-content">
+          <div class="step-title">建立 Repository 並上傳檔案</div>
+          <div class="step-desc">新增 Public Repository，上傳 HTML 檔案並命名為 <code>index.html</code></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-icon">③</div>
+        <div class="step-content">
+          <div class="step-title">開啟 GitHub Pages</div>
+          <div class="step-desc">Settings → Pages → Branch 選「main」→ Save，等約 1 分鐘即可取得公開網址</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- 注意事項 -->
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="warning">
+      <div class="warning-icon">!</div>
+      <div class="warning-text"><strong>試算表 C 欄務必設為「純文字」格式</strong>，否則日期讀取會出錯，導致已預約時段無法正確鎖住</div>
+    </div>
+    <div class="warning">
+      <div class="warning-icon">!</div>
+      <div class="warning-text"><strong>每次更新 Apps Script 程式碼後</strong>，需重新部署「新版本」，並將新網址更新到 HTML 檔案中</div>
+    </div>
+    <div class="warning">
+      <div class="warning-icon">!</div>
+      <div class="warning-text"><strong>取消某筆預約</strong>時，直接在試算表刪除該列資料，客戶下次打開頁面時段就會自動重新開放</div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <div class="footer-brand">映緹影像 · intidiga</div>
+  © 2026 · intidiga · 本指令包由映緹影像製作分享
+</footer>
+
+<script>
+function copyPrompt(id, btn) {
+  const el = document.getElementById(id);
+  const text = el.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '已複製！';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '複製指令';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+</script>
+</body>
+</html>
